@@ -30,7 +30,7 @@ const BorrowedBook = db.define("borrowed_book", {
     allowNull: false,
   },
   status: {
-    type: DataTypes.ENUM("borrowed", "returned"),
+    type: DataTypes.ENUM("borrowed", "returned", "overdue"),
     allowNull: false,
   },
 });

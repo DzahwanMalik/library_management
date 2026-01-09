@@ -1,8 +1,28 @@
 import db from "../config/database.js";
 import { Book, User, BorrowedBook } from "../models/index.js";
 
+const updateOverdueStatus = async () => {
+  try {
+    const today = new Date();
+    await BorrowedBook.update(
+      { status: "overdue" },
+      {
+        where: {
+          status: "borrowed",
+          due_date: { [db.Sequelize.Op.lt]: today },
+          returned_at: null,
+        },
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const getBorrowedBooks = async (req, res) => {
   try {
+    await updateOverdueStatus();
+
     const borrowedBooks = await BorrowedBook.findAll({
       include: [
         {
