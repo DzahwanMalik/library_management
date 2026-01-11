@@ -27,6 +27,20 @@ const getBooks = async (req, res) => {
   }
 };
 
+const getBook = async (req, res) => {
+  try {
+    const { id_book } = req.params;
+    const book = await Book.findOne({ where: { id: id_book } });
+    res.json({
+      result: book,
+      message: "Berhasil mengambil data buku!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 const updateBook = async (req, res) => {
   try {
     const { id_book } = req.params;
@@ -60,4 +74,4 @@ const deleteBook = async (req, res) => {
   }
 };
 
-export { addBook, getBooks, updateBook, deleteBook };
+export { addBook, getBooks, getBook, updateBook, deleteBook };

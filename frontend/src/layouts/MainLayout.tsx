@@ -3,9 +3,12 @@ import Navbar from "../components/organisms/Navbar";
 import SidebarListItem from "../components/organisms/SidebarListItem";
 import { sidebarIcon } from "../constants/sidebarIcons";
 import { useState } from "react";
+import useGetData from "../hooks/useGetData";
 
 const MainLayout = () => {
   const [theme, setTheme] = useState<string>("light");
+
+  const { borrowedData } = useGetData();
 
   return (
     <div className="drawer lg:drawer-open" data-theme={theme}>

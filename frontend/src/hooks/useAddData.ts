@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../lib/axios";
 
 const useAddData = () => {
   const [addLoading, setAddLoading] = useState<boolean>(false);
   const [addSuccess, setAddSuccess] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAddSuccess(null);
+      setAddError(null);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [addSuccess, addError]);
 
   const handleError = (error: any) => {
     console.error("Error adding data:", error);

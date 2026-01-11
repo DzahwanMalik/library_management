@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../lib/axios";
 
 const useBorrowBook = () => {
   const [borrowLoading, setBorrowLoading] = useState<boolean>(false);
   const [borrowSuccess, setBorrowSuccess] = useState<string | null>(null);
   const [borrowError, setBorrowError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setBorrowSuccess(null);
+      setBorrowError(null);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [borrowSuccess, borrowError]);
 
   const handleError = (error: any) => {
     console.error("Error borrowing book:", error);

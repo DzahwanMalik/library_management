@@ -2,6 +2,7 @@ import express from "express";
 import {
   addBook,
   getBooks,
+  getBook,
   updateBook,
   deleteBook,
 } from "../controller/book.controller.js";
@@ -10,6 +11,7 @@ const bookRouter = express.Router();
 
 bookRouter.post("/book", addBook);
 bookRouter.get("/books", getBooks);
+bookRouter.get("/book/:id_book", getBook);
 bookRouter.patch("/book/:id_book", updateBook);
 bookRouter.delete("/book/:id_book", deleteBook);
 

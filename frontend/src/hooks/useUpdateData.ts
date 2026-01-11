@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../lib/axios";
 
 const useUpdateData = () => {
   const [updateLoading, setUpdateLoading] = useState<boolean>(false);
   const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
   const [updateError, setUpdateError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setUpdateSuccess(null);
+      setUpdateError(null);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [updateSuccess, updateError]);
 
   const handleError = (error: any) => {
     console.error("Error updating data:", error);

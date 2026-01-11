@@ -47,7 +47,7 @@ const borrowBook = async (req, res) => {
   const t = await db.transaction();
 
   try {
-    const { id_book, id_user, borrowed_at, returned_at, due_date, status } =
+    const { id_book, id_user, borrowed_at, returned_at, due_date } =
       req.body;
 
     const borrowedBook = await BorrowedBook.create({
@@ -56,7 +56,7 @@ const borrowBook = async (req, res) => {
       borrowed_at,
       returned_at,
       due_date,
-      status,
+      status: "borrowed",
     });
 
     await Book.decrement("quantity", {
@@ -82,10 +82,10 @@ const returnBook = async (req, res) => {
 
   try {
     const { id_book, id_user } = req.params;
-    const { returned_at, status } = req.body;
+    const { returned_at } = req.body;
 
     await BorrowedBook.update(
-      { returned_at, status },
+      { returned_at, status: "returned" },
       { where: { id_book, id_user } }
     );
 

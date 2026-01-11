@@ -8,6 +8,7 @@ import UsersPage from "./pages/UsersPage";
 import BooksPage from "./pages/BooksPage";
 import HistoryPage from "./pages/HistoryPage";
 import AddUserPage from "./pages/AddUserPage";
+import EditUserPage from "./pages/EditUserPage";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -18,7 +19,7 @@ createRoot(document.getElementById("root")!).render(
 
           <Route path="users" element={<UsersPage />} />
           <Route path="users/add" element={<AddUserPage />} />
-          <Route path="users/edit/:id" element={<h1>Edit User</h1>} />
+          <Route path="users/edit/:id" element={<EditUserPage />} />
 
           <Route path="books" element={<BooksPage />} />
           <Route path="history" element={<HistoryPage />} />

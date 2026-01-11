@@ -43,7 +43,11 @@ const HistoryPage = () => {
                 <td>{borrowed.user.name}</td>
                 <td>{borrowed.book.title}</td>
                 <td>{formattedDate(borrowed.borrowed_at)}</td>
-                <td>{formattedDate(borrowed.returned_at)}</td>
+                <td>
+                  {borrowed.returned_at
+                    ? formattedDate(borrowed.returned_at)
+                    : '"Belum Dikembalikan"'}
+                </td>
                 <td>{formattedDate(borrowed.due_date)}</td>
                 <td>
                   {

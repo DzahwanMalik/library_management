@@ -1,8 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import useAddData from "../hooks/useAddData";
 import Alert from "../components/atoms/Alert";
+import useUpdateData from "../hooks/useUpdateData";
+import { useParams } from "react-router";
+import useGetData from "../hooks/useGetData";
+import { useEffect } from "react";
 
 const schema = z.object({
   name: z.string().min(5, "Mimimal 5 karakter"),
@@ -10,22 +13,39 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-const AddUserPage = () => {
+const EditUserPage = () => {
+  const USER_ID = useParams().id;
+
   const { register, handleSubmit, formState, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const { addUser, addSuccess, addError, addLoading } = useAddData();
+  const { userData, getUser, getError } = useGetData();
+  const { updateUser, updateSuccess, updateError, updateLoading } =
+    useUpdateData();
 
   const onSubmit = (data: FormData) => {
-    addUser(data.name);
-    reset();
+    updateUser(Number(USER_ID), data.name);
+    reset({
+      name: data.name,
+    });
   };
+
+  useEffect(() => {
+    getUser(Number(USER_ID));
+  }, []);
+
+  useEffect(() => {
+    reset({
+      name: userData[0]?.name,
+    });
+  }, [userData]);
 
   return (
     <>
-      {addSuccess && <Alert variant="success" message={addSuccess} />}
-      {addError && <Alert variant="error" message={addError} />}
+      {updateSuccess && <Alert variant="success" message={updateSuccess} />}
+      {updateError && <Alert variant="error" message={updateError} />}
+      {getError && <Alert variant="error" message={getError} />}
       <form onSubmit={handleSubmit(onSubmit)}>
         <label>
           <fieldset className="fieldset mb-5">
@@ -44,11 +64,11 @@ const AddUserPage = () => {
           </fieldset>
         </label>
         <button className="btn btn-primary">
-          {addLoading ? "Loading..." : "Tambahkan"}
+          {updateLoading ? "Loading..." : "Update"}
         </button>
       </form>
     </>
   );
 };
 
-export default AddUserPage;
+export default EditUserPage;

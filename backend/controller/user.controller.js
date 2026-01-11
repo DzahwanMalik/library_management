@@ -27,15 +27,29 @@ const getUsers = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  try {
+    const { id_user } = req.params;
+    const user = await User.findOne({ where: { id: id_user } });
+    res.json({
+      result: user,
+      message: "Berhasil mengambil data user!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 const updateUser = async (req, res) => {
   try {
     const { id_user } = req.params;
     const { name } = req.body;
 
     await User.update({ name }, { where: { id: id_user } });
-    
+
     const updatedUser = await User.findOne({ where: { id: id_user } });
-    
+
     res.json({
       result: updatedUser,
       message: "User berhasil diperbarui!",
@@ -60,4 +74,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { addUser, getUsers, updateUser, deleteUser };
+export { addUser, getUsers, getUser, updateUser, deleteUser };

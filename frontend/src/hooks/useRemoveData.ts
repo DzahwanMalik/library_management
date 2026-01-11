@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../lib/axios";
 
 const useRemoveData = () => {
   const [removeLoading, setRemoveLoading] = useState<boolean>(false);
   const [removeError, setRemoveError] = useState<string | null>(null);
   const [removeSuccess, setRemoveSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setRemoveSuccess(null);
+      setRemoveError(null);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [removeSuccess, removeError]);
 
   const handleError = (error: any) => {
     console.error("Error removing data:", error);
