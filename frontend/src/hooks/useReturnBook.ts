@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../lib/axios";
 
 const useReturnBook = () => {
-  const [returnSuccess, setReturnSuccess] = useState<boolean | null>(null);
+  const [returnSuccess, setReturnSuccess] = useState<string | null>(null);
   const [returnError, setReturnError] = useState<string | null>(null);
   const [returnLoading, setReturnLoading] = useState<boolean>(false);
 
@@ -29,7 +29,6 @@ const useReturnBook = () => {
     id_book: number,
     id_user: number,
     returned_at: Date,
-    status: string
   ) => {
     try {
       setReturnLoading(true);
@@ -37,10 +36,9 @@ const useReturnBook = () => {
         `/borrowedBook/${id_book}/${id_user}`,
         {
           returned_at,
-          status,
         }
       );
-      setReturnSuccess(response.data.success);
+      setReturnSuccess(response.data.message);
     } catch (error) {
       handleError(error);
     } finally {

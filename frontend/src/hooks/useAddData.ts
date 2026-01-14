@@ -37,10 +37,22 @@ const useAddData = () => {
     }
   };
 
-  const addBook = async (title: string, quantity: number) => {
+  const addBook = async (title: string, quantity: number, image: File) => {
     try {
       setAddLoading(true);
-      const response = await axiosInstance.post("/book", { title, quantity });
+      const response = await axiosInstance.post(
+        "/book",
+        {
+          title,
+          quantity,
+          image,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       setAddSuccess(response.data.message);
     } catch (error) {
       handleError(error);

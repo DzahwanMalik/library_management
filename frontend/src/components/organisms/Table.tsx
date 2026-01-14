@@ -5,7 +5,7 @@ type TableProps = {
 
 const Table = ({ data, columns }: TableProps) => {
   return (
-    <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+    <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 min-h-dvh">
       <table className="table">
         {/* head */}
         <thead>

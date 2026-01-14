@@ -17,8 +17,8 @@ const AddUserPage = () => {
 
   const { addUser, addSuccess, addError, addLoading } = useAddData();
 
-  const onSubmit = (data: FormData) => {
-    addUser(data.name);
+  const onSubmit = async (data: FormData) => {
+    await addUser(data.name);
     reset();
   };
 

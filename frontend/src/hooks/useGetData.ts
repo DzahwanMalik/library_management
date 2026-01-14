@@ -3,11 +3,15 @@ import axiosInstance from "../lib/axios";
 import type { User } from "../types/user.type";
 import type { Book } from "../types/book.type";
 import type { BorrowedBook } from "../types/borrowedBook.type";
+import type { DataResponse } from "../types/dataResponse.type";
 
 const useGetData = () => {
-  const [userData, setUserData] = useState<User[]>([]);
-  const [bookData, setBookData] = useState<Book[]>([]);
-  const [borrowedData, setBorrowedData] = useState<BorrowedBook[]>([]);
+  const [userData, setUserData] = useState<DataResponse<User> | null>(null);
+  const [userDetail, setUserDetail] = useState<User | null>(null);
+  const [bookData, setBookData] = useState<DataResponse<Book> | null>(null);
+  const [bookDetail, setBookDetail] = useState<Book | null>(null);
+  const [borrowedData, setBorrowedData] =
+    useState<DataResponse<BorrowedBook> | null>(null);
 
   const [getLoading, setGetLoading] = useState<boolean>(false);
   const [getSuccess, setGetSuccess] = useState<string | null>(null);
@@ -32,10 +36,12 @@ const useGetData = () => {
     );
   };
 
-  const getUsers = async () => {
+  const getUsers = async (page: number, search?: string) => {
     try {
       setGetLoading(true);
-      const response = await axiosInstance.get("/users");
+      const response = await axiosInstance.get("/users", {
+        params: { search, page },
+      });
       setUserData(response.data.result);
       setGetSuccess(response.data.message);
     } catch (error) {
@@ -49,7 +55,7 @@ const useGetData = () => {
     try {
       setGetLoading(true);
       const response = await axiosInstance.get(`/user/${userId}`);
-      setUserData([response.data.result]);
+      setUserDetail(response.data.result);
       setGetSuccess(response.data.message);
     } catch (error) {
       handleError(error);
@@ -58,10 +64,12 @@ const useGetData = () => {
     }
   };
 
-  const getBooks = async () => {
+  const getBooks = async (page: number, search?: string) => {
     try {
       setGetLoading(true);
-      const response = await axiosInstance.get("/books");
+      const response = await axiosInstance.get("/books", {
+        params: { page, search },
+      });
       setBookData(response.data.result);
       setGetSuccess(response.data.message);
     } catch (error) {
@@ -75,7 +83,7 @@ const useGetData = () => {
     try {
       setGetLoading(true);
       const response = await axiosInstance.get(`/book/${bookId}`);
-      setBookData([response.data.result]);
+      setBookDetail(response.data.result);
       setGetSuccess(response.data.message);
     } catch (error) {
       handleError(error);
@@ -84,10 +92,12 @@ const useGetData = () => {
     }
   };
 
-  const getBorrowedBooks = async () => {
+  const getBorrowedBooks = async (page: number, search?: string) => {
     try {
       setGetLoading(true);
-      const response = await axiosInstance.get("/borrowedBooks");
+      const response = await axiosInstance.get("/borrowedBooks", {
+        params: { page, search },
+      });
       setBorrowedData(response.data.result);
       setGetSuccess(response.data.message);
     } catch (error) {
@@ -99,7 +109,9 @@ const useGetData = () => {
 
   return {
     userData,
+    userDetail,
     bookData,
+    bookDetail,
     borrowedData,
     getLoading,
     getSuccess,

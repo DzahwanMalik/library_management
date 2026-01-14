@@ -1,4 +1,5 @@
 import { User } from "../models/index.js";
+import { Op } from "sequelize";
 
 const addUser = async (req, res) => {
   try {
@@ -16,9 +17,28 @@ const addUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const users = await User.findAll();
+    const page = req.query.page || 1;
+    const search = req.query.search || null;
+    const offset = (page - 1) * 10;
+    const limit = 10;
+
+    const users = await User.findAndCountAll({
+      where: search && { name: { [Op.like]: `%${search}%` } },
+      order: [["name", "ASC"]],
+      limit,
+      offset,
+    });
+
+    const totalPage = Math.ceil(users.count / limit);
+
     res.json({
-      result: users,
+      result: {
+        data: users.rows,
+        pagination: {
+          currentPage: page,
+          totalPage,
+        },
+      },
       message: "Berhasil mengambil data user!",
     });
   } catch (error) {

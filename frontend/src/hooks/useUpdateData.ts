@@ -37,13 +37,27 @@ const useUpdateData = () => {
     }
   };
 
-  const updateBook = async (id: number, title: string, quantity: number) => {
+  const updateBook = async (
+    id: number,
+    title: string,
+    quantity: number,
+    image?: File
+  ) => {
     try {
       setUpdateLoading(true);
-      const response = await axiosInstance.patch(`/book/${id}`, {
-        title,
-        quantity,
-      });
+      const response = await axiosInstance.patch(
+        `/book/${id}`,
+        {
+          title,
+          quantity,
+          image,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       setUpdateSuccess(response.data.message);
     } catch (error) {
       handleError(error);

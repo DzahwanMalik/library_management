@@ -28,20 +28,14 @@ const useBorrowBook = () => {
   const borrowBook = async (
     id_book: number,
     id_user: number,
-    borrowed_at: Date,
-    returned_at: Date,
-    due_date: Date,
-    status: string
+    due_date: Date
   ) => {
     try {
       setBorrowLoading(true);
       const response = await axiosInstance.post("/borrowedBook", {
         id_book,
         id_user,
-        borrowed_at,
-        returned_at,
         due_date,
-        status,
       });
       setBorrowSuccess(response.data.message);
     } catch (error) {

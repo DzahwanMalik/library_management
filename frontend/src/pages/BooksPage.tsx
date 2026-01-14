@@ -1,76 +1,81 @@
-import { useEffect } from "react";
-import Table from "../components/organisms/Table";
-import useGetData from "../hooks/useGetData";
-import SearchInput from "../components/atoms/searchInput";
-import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { Plus } from "lucide-react";
+import SearchInput from "../components/atoms/searchInput";
+import useGetData from "../hooks/useGetData";
 import useRemoveData from "../hooks/useRemoveData";
+import PaginationButton from "../components/atoms/PaginationButton";
+import Alert from "../components/atoms/Alert";
+import BookCard from "../components/molecules/BookCard";
 
 const BooksPage = () => {
-  const { register, watch } = useForm();
+  const [page, setPage] = useState<number>(1);
+  const { register, watch, reset } = useForm();
   const searchValue = watch("search");
 
   const navigate = useNavigate();
 
   const { bookData, getBooks } = useGetData();
-  const { removeBook } = useRemoveData();
-
-  const filteredBooks = bookData.filter((book) =>
-    book.title.toLowerCase().includes(searchValue?.toLowerCase() || "")
-  );
+  const { removeBook, removeSuccess, removeError } = useRemoveData();
 
   useEffect(() => {
-    getBooks();
-  }, []);
+    getBooks(page, searchValue);
+  }, [page, searchValue]);
 
-  const handleDelete = (id: number) => {
+  useEffect(() => {
+    setPage(1);
+  }, [searchValue]);
+
+  const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this book?")) {
-      removeBook(id);
-      getBooks();
+      await removeBook(id);
+      getBooks(page, searchValue);
+      reset({
+        search: "",
+      });
     }
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex gap-3 flex-col items-start md:justify-between md:flex-row">
-        <SearchInput {...register("search")} />
-        <button
-          onClick={() => navigate(`add`)}
-          className="btn btn-primary flex items-center"
-        >
-          <Plus className="size-5" /> <span>Tambah Data</span>
-        </button>
-      </div>
-      <Table
-        columns={["ID", "Title", "Quantity", "Actions"]}
-        data={
-          <>
-            {filteredBooks.map((book) => (
-              <tr key={book.id}>
-                <th>{book.id}</th>
-                <td className="w-full">{book.title}</td>
-                <td>{book.quantity}</td>
-                <td className="flex gap-4">
-                  <button
-                    onClick={() => navigate(`edit/${book.id}`)}
-                    className="btn btn-soft"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-soft btn-error"
-                    onClick={() => handleDelete(book.id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
+    <>
+      {removeSuccess && <Alert variant="success" message={removeSuccess} />}
+      {removeError && <Alert variant="error" message={removeError} />}
+      <div className="flex flex-col gap-5">
+        <div className="flex gap-3 flex-col items-start md:justify-between md:flex-row">
+          <SearchInput {...register("search")} />
+          <button
+            onClick={() => navigate(`add`)}
+            className="btn btn-primary flex items-center"
+          >
+            <Plus className="size-5" /> <span>Tambah Data</span>
+          </button>
+        </div>
+        <div className="min-h-screen">
+          <div className="grid gap-5 grid-cols-1 md:grid-cols-5">
+            {bookData?.data.map((book) => (
+              <BookCard
+                book={book}
+                key={book.id}
+                handleBorrow={() => navigate(`borrow/${book.id}`)}
+                handleDelete={() => handleDelete(book.id)}
+                handleEdit={() => navigate(`edit/${book.id}`)}
+              />
             ))}
-          </>
-        }
-      />
-    </div>
+          </div>
+        </div>
+        <div className="flex justify-between items-center">
+          <p className="text-base">
+            Page {bookData?.pagination.currentPage} of{" "}
+            {bookData?.pagination.totalPage}
+          </p>
+          <PaginationButton
+            pagination={bookData?.pagination}
+            setPage={setPage}
+          />
+        </div>
+      </div>
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 import ThemeToggle from "../atoms/ThemeToggle";
 
-const Navbar = ({ setTheme }: { setTheme: (theme: string) => void }) => {
+const Navbar = () => {
   return (
     <nav className="navbar w-full bg-base-300">
       <label
@@ -25,7 +25,7 @@ const Navbar = ({ setTheme }: { setTheme: (theme: string) => void }) => {
         </svg>
       </label>
       <div className="px-4 font-semibold">Tarhud_Library</div>
-      <ThemeToggle setTheme={setTheme} />
+      <ThemeToggle />
     </nav>
   );
 };

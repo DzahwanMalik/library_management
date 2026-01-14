@@ -20,7 +20,7 @@ const EditUserPage = () => {
     resolver: zodResolver(schema),
   });
 
-  const { userData, getUser, getError } = useGetData();
+  const { userDetail, getUser, getError } = useGetData();
   const { updateUser, updateSuccess, updateError, updateLoading } =
     useUpdateData();
 
@@ -37,9 +37,9 @@ const EditUserPage = () => {
 
   useEffect(() => {
     reset({
-      name: userData[0]?.name,
+      name: userDetail?.name,
     });
-  }, [userData]);
+  }, [userDetail]);
 
   return (
     <>

@@ -1,5 +1,6 @@
 import db from "../config/database.js";
 import { Book, User, BorrowedBook } from "../models/index.js";
+import { Op } from "sequelize";
 
 const updateOverdueStatus = async () => {
   try {
@@ -23,7 +24,22 @@ const getBorrowedBooks = async (req, res) => {
   try {
     await updateOverdueStatus();
 
-    const borrowedBooks = await BorrowedBook.findAll({
+    const page = req.query.page || 1;
+    const search = req.query.search || null;
+    const offset = (page - 1) * 10;
+    const limit = 10;
+
+    const borrowedBooks = await BorrowedBook.findAndCountAll({
+      where: search && {
+        name: { [Op.like]: `%${search}%` },
+        title: { [Op.like]: `%${search}%` },
+        status: { [Op.like]: `%${search}%` },
+        borrowed_at: { [Op.like]: `%${search}%` },
+        returned_at: { [Op.like]: `%${search}%` },
+        due_date: { [Op.like]: `%${search}%` },
+      },
+      limit,
+      offset,
       include: [
         {
           model: Book,
@@ -33,8 +49,17 @@ const getBorrowedBooks = async (req, res) => {
         },
       ],
     });
+
+    const totalPage = Math.ceil(borrowedBooks.count / limit);
+
     res.json({
-      result: borrowedBooks,
+      result: {
+        data: borrowedBooks.rows,
+        pagination: {
+          currentPage: page,
+          totalPage,
+        },
+      },
       message: "Berhasil mengambil data buku yang dipinjam!",
     });
   } catch (error) {
@@ -47,17 +72,34 @@ const borrowBook = async (req, res) => {
   const t = await db.transaction();
 
   try {
-    const { id_book, id_user, borrowed_at, returned_at, due_date } =
-      req.body;
+    const { id_book, id_user, due_date } = req.body;
 
-    const borrowedBook = await BorrowedBook.create({
-      id_book,
-      id_user,
-      borrowed_at,
-      returned_at,
-      due_date,
-      status: "borrowed",
-    });
+    const book = await Book.findOne(
+      { where: { id: id_book } },
+      { transaction: t }
+    );
+
+    if (!book) {
+      await t.rollback();
+      return res.status(404).json({ message: "Buku tidak ditemukan!" });
+    }
+
+    if (book.quantity === 0) {
+      await t.rollback();
+      return res.status(401).json({ message: "Buku tidak tersedia!" });
+    }
+
+    const borrowedBook = await BorrowedBook.create(
+      {
+        id_book,
+        id_user,
+        borrowed_at: new Date(),
+        returned_at: null,
+        due_date,
+        status: "borrowed",
+      },
+      { transaction: t }
+    );
 
     await Book.decrement("quantity", {
       where: { id: id_book },
@@ -86,7 +128,8 @@ const returnBook = async (req, res) => {
 
     await BorrowedBook.update(
       { returned_at, status: "returned" },
-      { where: { id_book, id_user } }
+      { where: { id_book, id_user } },
+      { transaction: t }
     );
 
     await Book.increment("quantity", {
@@ -96,7 +139,7 @@ const returnBook = async (req, res) => {
 
     const updatedBorrowedBook = await BorrowedBook.findOne({
       where: { id_book, id_user },
-    });
+    }, { transaction: t });
 
     await t.commit();
 

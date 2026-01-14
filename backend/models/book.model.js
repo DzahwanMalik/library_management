@@ -9,6 +9,14 @@ const Book = db.define("book", {
     primaryKey: true,
     autoIncrement: true,
   },
+  image_url: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  image_public_id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false,

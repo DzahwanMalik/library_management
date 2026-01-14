@@ -1,14 +1,32 @@
-const ThemeToggle = ({ setTheme }: { setTheme: (theme: string) => void }) => {
+import { useEffect, useState } from "react";
+
+const ThemeToggle = () => {
+  const [theme, setTheme] = useState<string | null>(
+    localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
+  );
+
+  const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  };
+
+  useEffect(() => {
+    localStorage.setItem("theme", theme!);
+
+    const localTheme = localStorage.getItem("theme");
+    document.documentElement.setAttribute("data-theme", localTheme!);
+  }, [theme]);
+
   return (
     <label className="swap swap-rotate ms-auto cursor-pointer px-4">
       {/* this hidden checkbox controls the state */}
       <input
         type="checkbox"
         className="theme-controller"
-        value="synthwave"
-        onChange={(e) =>
-          setTheme(e.target.checked ? "dark" : "light")
-        }
+        onChange={handleToggle}
       />
 
       {/* sun icon */}

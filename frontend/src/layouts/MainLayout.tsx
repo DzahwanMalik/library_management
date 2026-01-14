@@ -1,21 +1,15 @@
 import { Outlet } from "react-router";
+import { sidebarIcon } from "../constants/sidebarIcons";
 import Navbar from "../components/organisms/Navbar";
 import SidebarListItem from "../components/organisms/SidebarListItem";
-import { sidebarIcon } from "../constants/sidebarIcons";
-import { useState } from "react";
-import useGetData from "../hooks/useGetData";
 
 const MainLayout = () => {
-  const [theme, setTheme] = useState<string>("light");
-
-  const { borrowedData } = useGetData();
-
   return (
-    <div className="drawer lg:drawer-open" data-theme={theme}>
+    <div className="drawer lg:drawer-open">
       <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content">
         {/* Navbar */}
-        <Navbar setTheme={setTheme} />
+        <Navbar />
         {/* Page content here */}
         <div className="p-4">
           <Outlet />
