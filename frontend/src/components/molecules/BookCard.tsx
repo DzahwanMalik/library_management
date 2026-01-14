@@ -22,22 +22,22 @@ const BookCard = ({ book, handleBorrow, handleDelete, handleEdit }: Props) => {
       <div className="card-body">
         <h2 className="card-title">{book.title}</h2>
         <p>Jumlah : {book.quantity}</p>
-        <div className="card-actions justify-end">
+        <div className="card-actions justify-end mt-10">
           <button
             onClick={handleBorrow}
-            className="btn btn-primary btn-sm md:btn-md"
+            className="w-full btn btn-soft btn-primary btn-sm"
           >
             Pinjamkan
           </button>
           <button
             onClick={handleEdit}
-            className="btn btn-soft btn-sm md:btn-md"
+            className="w-full btn btn-soft btn-sm"
           >
             Edit
           </button>
           <button
             onClick={handleDelete}
-            className="btn btn-soft btn-error btn-sm md:btn-md"
+            className="w-full btn btn-soft btn-error btn-sm"
           >
             Delete
           </button>

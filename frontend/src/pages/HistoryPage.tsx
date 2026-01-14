@@ -103,10 +103,16 @@ const HistoryPage = () => {
             </>
           }
         />
-        <PaginationButton
-          pagination={borrowedData?.pagination}
-          setPage={setPage}
-        />
+        <div className="flex justify-between items-center">
+          <p className="text-base">
+            Page {borrowedData?.pagination.currentPage} of{" "}
+            {borrowedData?.pagination.totalPage}
+          </p>
+          <PaginationButton
+            pagination={borrowedData?.pagination}
+            setPage={setPage}
+          />
+        </div>
       </div>
     </>
   );

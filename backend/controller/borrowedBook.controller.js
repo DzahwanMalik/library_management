@@ -1,6 +1,6 @@
 import db from "../config/database.js";
 import { Book, User, BorrowedBook } from "../models/index.js";
-import { Op } from "sequelize";
+import { Op, where } from "sequelize";
 
 const updateOverdueStatus = async () => {
   try {
@@ -29,15 +29,18 @@ const getBorrowedBooks = async (req, res) => {
     const offset = (page - 1) * 10;
     const limit = 10;
 
+    const whereCondition = {};
+
+    if (search) {
+      whereCondition[Op.or] = [
+        { "$User.name$": { [Op.like]: `%${search}%` } },
+        { "$Book.title$": { [Op.like]: `%${search}%` } },
+        { status: { [Op.like]: `%${search}%` } },
+      ];
+    }
+
     const borrowedBooks = await BorrowedBook.findAndCountAll({
-      where: search && {
-        name: { [Op.like]: `%${search}%` },
-        title: { [Op.like]: `%${search}%` },
-        status: { [Op.like]: `%${search}%` },
-        borrowed_at: { [Op.like]: `%${search}%` },
-        returned_at: { [Op.like]: `%${search}%` },
-        due_date: { [Op.like]: `%${search}%` },
-      },
+      where: whereCondition,
       limit,
       offset,
       include: [
@@ -61,6 +64,54 @@ const getBorrowedBooks = async (req, res) => {
         },
       },
       message: "Berhasil mengambil data buku yang dipinjam!",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const getOverdueBooks = async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const search = req.query.search || null;
+    const offset = (page - 1) * 10;
+    const limit = 10;
+
+    const whereCondition = {};
+
+    if (search) {
+      whereCondition[Op.or] = [
+        { "$User.name$": { [Op.like]: `%${search}%` } },
+        { "$Book.title$": { [Op.like]: `%${search}%` } },
+      ];
+    }
+
+    const borrowedBooks = await BorrowedBook.findAndCountAll({
+      where: { status: "overdue", ...whereCondition },
+      limit,
+      offset,
+      include: [
+        {
+          model: Book,
+        },
+        {
+          model: User,
+        },
+      ],
+    });
+
+    const totalPage = Math.ceil(borrowedBooks.count / limit);
+
+    res.json({
+      result: {
+        data: borrowedBooks.rows,
+        pagination: {
+          currentPage: page,
+          totalPage,
+        },
+      },
+      message: "Berhasil mengambil data buku yang menunggak!",
     });
   } catch (error) {
     console.log(error);
@@ -137,9 +188,12 @@ const returnBook = async (req, res) => {
       transaction: t,
     });
 
-    const updatedBorrowedBook = await BorrowedBook.findOne({
-      where: { id_book, id_user },
-    }, { transaction: t });
+    const updatedBorrowedBook = await BorrowedBook.findOne(
+      {
+        where: { id_book, id_user },
+      },
+      { transaction: t }
+    );
 
     await t.commit();
 
@@ -154,4 +208,4 @@ const returnBook = async (req, res) => {
   }
 };
 
-export { getBorrowedBooks, borrowBook, returnBook };
+export { getBorrowedBooks, getOverdueBooks, borrowBook, returnBook };

@@ -34,6 +34,7 @@ const getUsers = async (req, res) => {
     res.json({
       result: {
         data: users.rows,
+        totalData: users.count,
         pagination: {
           currentPage: page,
           totalPage,

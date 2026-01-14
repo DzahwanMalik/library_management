@@ -54,6 +54,7 @@ const getBooks = async (req, res) => {
     res.json({
       result: {
         data: books.rows,
+        totalData: books.count,
         pagination: {
           currentPage: page,
           totalPage,

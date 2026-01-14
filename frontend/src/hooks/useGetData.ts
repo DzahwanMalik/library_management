@@ -12,6 +12,8 @@ const useGetData = () => {
   const [bookDetail, setBookDetail] = useState<Book | null>(null);
   const [borrowedData, setBorrowedData] =
     useState<DataResponse<BorrowedBook> | null>(null);
+  const [overdueData, setOverdueData] =
+    useState<DataResponse<BorrowedBook> | null>(null);
 
   const [getLoading, setGetLoading] = useState<boolean>(false);
   const [getSuccess, setGetSuccess] = useState<string | null>(null);
@@ -107,12 +109,28 @@ const useGetData = () => {
     }
   };
 
+  const getOverdueBooks = async (page: number, search?: string) => {
+    try {
+      setGetLoading(true);
+      const response = await axiosInstance.get("/overdueBooks", {
+        params: { page, search },
+      });
+      setOverdueData(response.data.result);
+      setGetSuccess(response.data.message);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setGetLoading(false);
+    }
+  };
+
   return {
     userData,
     userDetail,
     bookData,
     bookDetail,
     borrowedData,
+    overdueData,
     getLoading,
     getSuccess,
     getError,
@@ -121,6 +139,7 @@ const useGetData = () => {
     getBooks,
     getBook,
     getBorrowedBooks,
+    getOverdueBooks,
   };
 };
 
