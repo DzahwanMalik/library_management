@@ -27,7 +27,7 @@ app.use(borrowedBookRouter);
     await db.authenticate();
     console.log("Database connected...");
 
-    await db.sync({ alter: true });
+    await db.sync();
     console.log("Database synced...");
 
     app.get("/api", (req, res) => {

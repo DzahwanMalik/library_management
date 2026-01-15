@@ -2,6 +2,7 @@ import fs from "fs";
 import cloudinary from "../config/cloudinary.js";
 import db from "../config/database.js";
 import { Book } from "../models/index.js";
+import { Op } from "sequelize";
 
 const addBook = async (req, res) => {
   try {
@@ -45,6 +46,7 @@ const getBooks = async (req, res) => {
 
     const books = await Book.findAndCountAll({
       where: search && { title: { [Op.like]: `%${search}%` } },
+      order: [["title", "ASC"]],
       limit,
       offset,
     });

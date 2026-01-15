@@ -1,4 +1,5 @@
 import type { Book } from "../../types/book.type";
+import truncateText from "../../utils/truncateText";
 
 type Props = {
   book: Book;
@@ -20,7 +21,7 @@ const BookCard = ({ book, handleBorrow, handleDelete, handleEdit }: Props) => {
         )}
       </figure>
       <div className="card-body">
-        <h2 className="card-title">{book.title}</h2>
+        <h2 className="card-title">{truncateText(book.title, 20)}</h2>
         <p>Jumlah : {book.quantity}</p>
         <div className="card-actions justify-end mt-10">
           <button
@@ -29,10 +30,7 @@ const BookCard = ({ book, handleBorrow, handleDelete, handleEdit }: Props) => {
           >
             Pinjamkan
           </button>
-          <button
-            onClick={handleEdit}
-            className="w-full btn btn-soft btn-sm"
-          >
+          <button onClick={handleEdit} className="w-full btn btn-soft btn-sm">
             Edit
           </button>
           <button

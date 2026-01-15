@@ -8,7 +8,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 const schema = z.object({
-  title: z.string().min(5, "Mimimal 5 karakter"),
+  title: z.string().min(2, "Mimimal 2 karakter"),
   quantity: z.coerce.number().min(1, "Minimal 1 buku"),
   image: z
     .custom<FileList>()

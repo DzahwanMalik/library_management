@@ -51,7 +51,7 @@ const BooksPage = () => {
             <Plus className="size-5" /> <span>Tambah Data</span>
           </button>
         </div>
-        <div className="min-h-screen">
+        <div>
           <div className="grid gap-5 grid-cols-1 md:grid-cols-5">
             {bookData?.data.map((book) => (
               <BookCard
