@@ -1,7 +1,10 @@
 import multer from "multer";
 
 const storage = multer.diskStorage({
-  destination: "upload/",
+  destination: function (req, file, cb) {
+    // Gunakan folder /tmp agar tidak error di serverless
+    cb(null, "./tmp/");
+  },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "-" + file.originalname);
   },
