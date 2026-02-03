@@ -14,11 +14,11 @@ const db = new Sequelize(
     dialectModul: mysql2,
     logging: false,
     port: process.env.DB_PORT,
-    dialectOptions: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    },
+    // dialectOptions: {
+    //   ssl: {
+    //     rejectUnauthorized: false,
+    //   },
+    // },
     pool: {
       max: 5,
       min: 0,

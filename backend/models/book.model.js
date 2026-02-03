@@ -13,10 +13,6 @@ const Book = db.define("book", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  image_public_id: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
   title: {
     type: DataTypes.STRING,
     allowNull: false,

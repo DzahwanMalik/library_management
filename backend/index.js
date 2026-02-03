@@ -22,10 +22,13 @@ app.use(bookRouter);
 app.use(userRouter);
 app.use(borrowedBookRouter);
 
+// Static Folder
+app.use("/uploads", express.static("uploads"));
+
 await db.authenticate();
 console.log("Database connected...");
 
-await db.sync();
+await db.sync({ alter: true });
 console.log("Database synced...");
 
 app.get("/api", (req, res) => {

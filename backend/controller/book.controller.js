@@ -1,5 +1,4 @@
 import fs from "fs";
-import cloudinary from "../config/cloudinary.js";
 import db from "../config/database.js";
 import { Book } from "../models/index.js";
 import { Op } from "sequelize";
@@ -9,22 +8,17 @@ const addBook = async (req, res) => {
     const { title, quantity } = req.body;
 
     let image_url = null;
-    let image_public_id = null;
 
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+      image_url = req.file.path;
 
-      image_url = result.secure_url;
-      image_public_id = result.public_id;
-
-      fs.unlinkSync(req.file.path);
+      image_url = image_url.replace("\\", "/");
     }
 
     const book = await Book.create({
       title,
       quantity,
       image_url,
-      image_public_id,
     });
 
     res.json({
@@ -99,17 +93,12 @@ const updateBook = async (req, res) => {
     }
 
     let image_url = book.image_url;
-    let image_public_id = book.image_public_id;
 
     if (req.file) {
-      await cloudinary.uploader.destroy(book.image_public_id);
+      fs.unlinkSync(book.image_url);
 
-      const result = await cloudinary.uploader.upload(req.file.path);
-
-      image_url = result.secure_url;
-      image_public_id = result.public_id;
-
-      fs.unlinkSync(req.file.path);
+      image_url = req.file.path;
+      image_url = image_url.replace("\\", "/");
     }
 
     await Book.update(
@@ -117,15 +106,14 @@ const updateBook = async (req, res) => {
         title,
         quantity,
         image_url,
-        image_public_id,
       },
       { where: { id: id_book } },
-      { transaction: t }
+      { transaction: t },
     );
 
     const updatedBook = await Book.findOne(
       { where: { id: id_book } },
-      { transaction: t }
+      { transaction: t },
     );
 
     await t.commit();
@@ -143,7 +131,16 @@ const updateBook = async (req, res) => {
 const deleteBook = async (req, res) => {
   try {
     const { id_book } = req.params;
-    const book = await Book.destroy({ where: { id: id_book } });
+    const book = await Book.findOne({ where: { id: id_book } });
+
+    if (!book) {
+      return res.status(404).json({ message: "Buku tidak ditemukan!" });
+    }
+
+    fs.unlinkSync(book.image_url);
+
+    await Book.destroy({ where: { id: id_book } });
+
     res.json({
       result: book,
       message: "Buku berhasil dihapus!",

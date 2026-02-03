@@ -14,7 +14,7 @@ const BookCard = ({ book, handleBorrow, handleDelete, handleEdit }: Props) => {
       <figure className="w-full bg-gray-200">
         {book.image_url && (
           <img
-            src={book.image_url}
+            src={import.meta.env.VITE_API_BASE_URL + "/" + book.image_url}
             alt="Cover"
             className="w-full h-full object-cover"
           />
